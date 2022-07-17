@@ -11,7 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {createTheme, Theme, ThemeProvider} from '@mui/material/styles';
 import ChipInput from '@sarakusha/material-ui-chip-input';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -126,7 +126,15 @@ export default function Album() {
                     {/* End hero unit */}
                     <Grid container spacing={4}>
                         <Card
-                            sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}
+                            sx={(theme) => (
+                                {
+                                    width: '50%', display: 'flex', flexDirection: 'column',
+                                    [theme.breakpoints.down('md')]: {
+                                        width: '100%',
+                                        height: '50%'
+                                    },
+                                }
+                            )}
                         >
                             <CardMedia
                                 component="img"
@@ -136,7 +144,15 @@ export default function Album() {
                             />
                         </Card>
                         <Card
-                            sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}
+                            sx={(theme) => (
+                                {
+                                    width: '50%', display: 'flex', flexDirection: 'column',
+                                    [theme.breakpoints.down('md')]: {
+                                        width: '100%',
+                                        height: '50%'
+                                    },
+                                }
+                            )}
                         >
                             <CardActions>
                                 <IconButton aria-label="delete" disabled={face.disable} onClick={() => disable(face.md5).then(record => loadFace(record))}>
