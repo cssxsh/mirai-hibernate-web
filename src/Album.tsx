@@ -6,11 +6,9 @@ import CardActions from '@mui/material/CardActions';
 import CardMedia from '@mui/material/CardMedia';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import {createTheme, Theme, ThemeProvider} from '@mui/material/styles';
 import ChipInput from '@sarakusha/material-ui-chip-input';
 import IconButton from '@mui/material/IconButton';
@@ -18,20 +16,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import RedoIcon from '@mui/icons-material/Redo';
 import {useEffect, useState} from "react";
-
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const theme = createTheme();
 
@@ -122,15 +106,15 @@ export default function Album() {
                 </Toolbar>
             </AppBar>
             <main>
-                <Container sx={{ py: 8 }} maxWidth="md">
+                <Container sx={{ py: 8 }}>
                     {/* End hero unit */}
-                    <Grid container spacing={4}>
+                    <Grid container spacing={4} sx={{ margin: '0'}}>
                         <Card
-                            sx={(theme) => (
+                            sx={(theme: Theme) => (
                                 {
-                                    width: '50%', display: 'flex', flexDirection: 'column',
+                                    width: '50%', display: 'inline-flex', flexDirection: 'column',
                                     [theme.breakpoints.down('md')]: {
-                                        width: '100%',
+                                        width: '90%',
                                         height: '50%'
                                     },
                                 }
@@ -146,9 +130,9 @@ export default function Album() {
                         <Card
                             sx={(theme) => (
                                 {
-                                    width: '50%', display: 'flex', flexDirection: 'column',
+                                    width: '50%', display: 'inline-flex', flexDirection: 'column',
                                     [theme.breakpoints.down('md')]: {
-                                        width: '100%',
+                                        width: '90%',
                                         height: '50%'
                                     },
                                 }
@@ -175,22 +159,6 @@ export default function Album() {
                     </Grid>
                 </Container>
             </main>
-            {/* Footer */}
-            <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-                <Typography variant="h6" align="center" gutterBottom>
-                    Footer
-                </Typography>
-                <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="text.secondary"
-                    component="p"
-                >
-                    Something here to give the footer a purpose!
-                </Typography>
-                <Copyright />
-            </Box>
-            {/* End footer */}
         </ThemeProvider>
     );
 }
