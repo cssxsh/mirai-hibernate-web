@@ -99,16 +99,16 @@ export default function Album() {
             <CssBaseline />
             <AppBar position="relative">
                 <Toolbar>
-                    <CameraIcon sx={{ mr: 2 }} />
+                    <CameraIcon sx={{mr: 2}} />
                     <Typography variant="h6" color="inherit" noWrap>
                         表情包审核
                     </Typography>
                 </Toolbar>
             </AppBar>
             <main>
-                <Container sx={{ py: 8 }}>
+                <Container sx={{py: 8}}>
                     {/* End hero unit */}
-                    <Grid container spacing={4} sx={{ margin: '0'}}>
+                    <Grid container spacing={4} sx={{margin: '0'}}>
                         <Card
                             sx={(theme: Theme) => (
                                 {
@@ -139,10 +139,12 @@ export default function Album() {
                             )}
                         >
                             <CardActions>
-                                <IconButton aria-label="delete" disabled={face.disable} onClick={() => disable(face.md5).then(record => loadFace(record))}>
+                                <IconButton aria-label="delete" disabled={face.disable}
+                                            onClick={() => disable(face.md5).then(record => loadFace(record))}>
                                     <DeleteIcon />
                                 </IconButton>
-                                <IconButton aria-label="flush" onClick={() => getTag(face.md5).then(record => loadTag(record))}>
+                                <IconButton aria-label="flush"
+                                            onClick={() => getTag(face.md5).then(record => loadTag(record))}>
                                     <RefreshIcon />
                                 </IconButton>
                                 <IconButton aria-label="redo" onClick={() => random().then(record => loadFace(record))}>
