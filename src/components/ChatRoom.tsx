@@ -5,9 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {createTheme, Theme, ThemeProvider} from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
-import {Autocomplete, Avatar, Box, Card, Grid, Link, Paper, Stack, TextField} from '@mui/material';
+import { Autocomplete, Avatar, Card, CardContent, Grid, Link, Paper, Stack, TextField } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
@@ -44,34 +44,40 @@ const theme = createTheme();
 const Send = function (message: MessageRecord) {
     const chain = JSON.parse(message.code) as [PlainText | Image | At]
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={1}>
-                <Avatar sx={{width: "100%", height: "auto"}}
-                        src={`https://q.qlogo.cn/g?b=qq&nk=${message.fromId}&s=640`} />
-            </Grid>
-            <Grid item xs={10}>
-                <Stack>
-                    <Box sx={{textAlign: "left"}}>{message.fromId}</Box>
-                    <Paper>{chain.map((item, index) => {
-                        switch (item.type) {
-                            case "PlainText":
-                                return (item as PlainText).content
-                            case "Image":
-                                const id = (item as Image).imageId
-                                const match = id.substring(1, 37).replaceAll("-", "")
-                                return <img key={index}
-                                            src={`https://gchat.qpic.cn/gchatpic_new/${message.fromId}/${message.targetId}-0-${match}/0?term=3`}
-                                            alt={id} />
-                            case "At":
-                                const target = (item as At).target
-                                return <Link href="#" underline="always">{`@${target}`}</Link>
-                            default:
-                                return `[${item.type}]`
-                        }
-                    })}</Paper>
-                </Stack>
-            </Grid>
-        </Grid>
+        <Card sx={{marginBottom: '0.5em'}}>
+            <CardContent>
+                <Grid container spacing={2}>
+                    <Grid item xs={1}>
+                        <Avatar sx={{width: "100%", height: "auto"}}
+                                src={`https://q.qlogo.cn/g?b=qq&nk=${message.fromId}&s=640`} />
+                    </Grid>
+                    <Grid item xs={10}>
+                        <Grid container direction={'column'}>
+                            <Grid item>{message.fromId}</Grid>
+                            <Grid item sx={{marginLeft: '0.5em'}}>
+                            {chain.map((item, index) => {
+                                switch (item.type) {
+                                    case "PlainText":
+                                        return (item as PlainText).content
+                                    case "Image":
+                                        const id = (item as Image).imageId
+                                        const match = id.substring(1, 37).replaceAll("-", "")
+                                        return <img key={index}
+                                                    src={`https://gchat.qpic.cn/gchatpic_new/${message.fromId}/${message.targetId}-0-${match}/0?term=3`}
+                                                    alt={id} />
+                                    case "At":
+                                        const target = (item as At).target
+                                        return <Link href="#" underline="always">{`@${target}`}</Link>
+                                    default:
+                                        return `[${item.type}]`
+                                }
+                            })}
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
     )
 }
 
@@ -229,7 +235,11 @@ export default function ChatRoom() {
                                 />
                                 </LocalizationProvider>
                             </Toolbar>
-                            {messages.map((message, index) => <Send {...message} key={index} />)}
+                            <Container>
+                                <Grid container direction={'column'}>
+                                    {messages.map((message, index) => <Send {...message} key={index} />)}
+                                </Grid>
+                            </Container>
                         </Stack>
                     </Paper>
                 </Container>
