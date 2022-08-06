@@ -22,11 +22,11 @@ export type SearchOption = {
 }
 
 export const SearchOptions: SearchOption[] = [
-	{value: FilterType.ByKind, label: "按消息类型"},
-	{value: FilterType.ByBot, label: "按机器人 ID"},
-	{value: FilterType.ByGroup, label: "按群号"},
-	{value: FilterType.ByFriend, label: "按 QQ 号"},
-	{value: FilterType.ByMember, label: "按群成员"},
+	{value: FilterType.ByKind, label: '按消息类型'},
+	{value: FilterType.ByBot, label: '按机器人 ID'},
+	{value: FilterType.ByGroup, label: '按群号'},
+	{value: FilterType.ByFriend, label: '按 QQ 号'},
+	{value: FilterType.ByMember, label: '按群成员'},
 ];
 
 export enum KindFilterType {
@@ -36,13 +36,25 @@ export enum KindFilterType {
 	StrangerDirectMessage = 'STRANGER',
 }
 
+function isNumericalMemberInObject(o: any, k: string) {
+	return k in o && typeof o[k] === 'number' && isFinite(o[k]);
+}
+
 interface TimeBoundOptions {
 	from: Timestamp;
 	to: Timestamp;
 }
 
+function isTimeBoundOptions(o: any): o is TimeBoundOptions {
+	return isNumericalMemberInObject(o, 'from') && isNumericalMemberInObject(o, 'to');
+}
+
 interface BotBoundOptions {
 	bot: BotId;
+}
+
+function isBotBoundOptions(o: any): o is BotBoundOptions {
+	return isNumericalMemberInObject(o, 'bot');
 }
 
 export interface KindFilterOptions extends TimeBoundOptions {
@@ -57,12 +69,33 @@ export interface BotFilterOptions extends TimeBoundOptions, BotBoundOptions {
 	// no member
 }
 
+export function isBotFilterOptions(o: MessageFilterOptions): o is BotFilterOptions {
+	return isTimeBoundOptions(o) && isBotBoundOptions(o);
+}
+
 export interface GroupMessageFilterOptions extends TimeBoundOptions, BotBoundOptions {
 	group: GroupId;
 }
 
+export function isGroupMessageFilterOptions(o: MessageFilterOptions): o is GroupMessageFilterOptions {
+	return isTimeBoundOptions(o) && isBotBoundOptions(o) && isNumericalMemberInObject(o, 'group');
+}
+
 export interface DirectMessageFilterOptions extends TimeBoundOptions, BotBoundOptions {
 	account: AccountId;
+}
+
+export function isDirectMessageFilterOptions(o: MessageFilterOptions): o is DirectMessageFilterOptions {
+	return isTimeBoundOptions(o) && isBotBoundOptions(o) && isNumericalMemberInObject(o, 'account');
+}
+
+export interface TemporaryMessageFilterOptions extends TimeBoundOptions, BotBoundOptions {
+	group: GroupId;
+	account: AccountId;
+}
+
+export function isTemporaryMessageFilterOptions(o: MessageFilterOptions): o is TemporaryMessageFilterOptions {
+	return isTimeBoundOptions(o) && isBotBoundOptions(o) && isNumericalMemberInObject(o, 'account') && isNumericalMemberInObject(o, 'group');
 }
 
 export type Timestamp = number;
