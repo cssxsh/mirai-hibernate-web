@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
-import { MessageRecord, SearchOption, SearchOptions } from '../types';
+import React, { useEffect, useState } from 'react';
+import {
+	FilterType,
+	KindFilterType, MessageFilterOptions,
+	MessageRecord,
+	PartialMessageFilterOptions,
+	SearchOptions,
+	toFilterType,
+} from '../types';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import KindFilter from './parts/KindFilter';
+import { fetchMessages } from '../logic/Routes';
+import { toUnixTimestamp } from '../util/DateTimeUtil';
+import BotFilter from './parts/BotFilter';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -11,21 +22,62 @@ export interface FilterControlProps {
 }
 
 export default function FilterControl(props: FilterControlProps) {
-	// TODO
-	const [filterType, setFilterType] = useState(SearchOptions[0].label);
+	const [filterType, setFilterType] = useState(FilterType.ByKind);
 	const [fromDate, setFromDate] = useState(new Date(Date.now() - ONE_HOUR));
 	const [toDate, setToDate] = useState(new Date());
-	const [botId, setBotId] = useState('');
-	const [groupId, setGroupId] = useState('');
+	const [filterOption, setFilterOption] = useState<PartialMessageFilterOptions>({kind: KindFilterType.GroupMessages});
+
+	let filterComponent: JSX.Element = <></>;
+
+	const filterValueChangeHandler = (x: PartialMessageFilterOptions) => {
+		setFilterOption(x);
+	};
+
+	const resetState = () => {
+		setFilterType(FilterType.ByKind);
+		setToDate(new Date());
+		setFromDate(new Date(Date.now() - ONE_HOUR));
+		setFilterOption({kind: KindFilterType.GroupMessages});
+	};
+
+	const refresh = () => {
+		setToDate(new Date());
+	};
+
+	switch (filterType) {
+		case FilterType.ByKind:
+			filterComponent = <KindFilter onValueChange={filterValueChangeHandler} />;
+			break;
+		case FilterType.ByBot:
+			filterComponent = <BotFilter onValueChange={filterValueChangeHandler} />;
+			break;
+		case FilterType.ByGroup:
+			// TODO
+			break;
+		case FilterType.ByFriend:
+			// TODO
+			break;
+		case FilterType.ByMember:
+			// TODO
+			break;
+	}
+
+	useEffect(() => {
+		const options = {...filterOption, from: toUnixTimestamp(fromDate), to: toUnixTimestamp(toDate)} as MessageFilterOptions;
+		fetchMessages(options)
+			.then(xs => {
+				props.setMessages(xs);
+			}).catch(console.error);
+	}, [fromDate, toDate, filterOption]);
 
 	return (<>
 		<Paper sx={{padding: 1}}>
-			<Grid container direction={'row'} spacing={1} justifyContent={'center'} alignItems={'center'}>
+			<Grid container direction={'row'} spacing={1} alignItems={'center'}>
 				<Grid item xs={2}>
 					<FormControl fullWidth>
-						<InputLabel id={'lbl-filter-type'}>Filter Type</InputLabel>
-						<Select labelId={'lbl-filter-type'} id={'filter-type'} value={filterType} label={'Filter Type'} onChange={(event) => { setFilterType(event.target.value) }}>
-							{SearchOptions.map((it, index) => <MenuItem key={index} value={it.label}>{it.label}</MenuItem>)}
+						<InputLabel id={'lbl-filter-type'}>过滤条件</InputLabel>
+						<Select labelId={'lbl-filter-type'} id={'filter-type'} value={filterType} label={'过滤条件'} onChange={(event) => { setFilterType(toFilterType(event.target.value)) }}>
+							{SearchOptions.map((it, index) => <MenuItem key={index} value={it.value}>{it.label}</MenuItem>)}
 						</Select>
 					</FormControl>
 				</Grid>
@@ -53,7 +105,7 @@ export default function FilterControl(props: FilterControlProps) {
 							renderInput={(value) => {
 								return (
 									<FormControl fullWidth>
-										<TextField {...value} label={'From Date'} />
+										<TextField {...value} label={'开始时间'} />
 									</FormControl>
 								)
 							}}/>
@@ -81,18 +133,19 @@ export default function FilterControl(props: FilterControlProps) {
 							renderInput={(value) => {
 								return (
 									<FormControl fullWidth>
-										<TextField {...value} label={'To Date'} />
+										<TextField {...value} label={'结束时间'} />
 									</FormControl>
 								)
 							}}/>
 					</Grid>
 				</LocalizationProvider>
-				<Grid item xs={2}>
-					<Button>Refresh</Button>
+				<Grid item xs={1}>
+					<Button onClick={refresh}>刷新</Button>
 				</Grid>
-			</Grid>
-			<Grid container direction={'row'}>
-
+				<Grid item xs={1}>
+					<Button onClick={resetState}>重置</Button>
+				</Grid>
+				{filterComponent}
 			</Grid>
 		</Paper>
 	</>);

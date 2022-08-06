@@ -31,7 +31,7 @@ export default function ChatRoom() {
             <Toolbar />
             <Container sx={{py: 2}}>
                 <Grid container direction={'column'}>
-                    <Grid item>
+                    <Grid item sx={{py: 1}}>
                         <FilterControl setMessages={xs => setMessages(xs)} />
                     </Grid>
                     {messages.map((message, index) => <MessageEntry {...message} key={index} />)}
