@@ -8,3 +8,7 @@
 	color: transparent;
 	text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
+.text-monospace {
+	font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}

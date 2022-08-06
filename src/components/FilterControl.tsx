@@ -26,6 +26,8 @@ export default function FilterControl(props: FilterControlProps) {
 	const [fromDate, setFromDate] = useState(new Date(Date.now() - ONE_HOUR));
 	const [toDate, setToDate] = useState(new Date());
 	const [filterOption, setFilterOption] = useState<PartialMessageFilterOptions>({kind: KindFilterType.GroupMessages});
+	const [acceptedFromDate, setAcceptedFromDate] = useState(fromDate);
+	const [acceptedToDate, setAcceptedToDate] = useState(toDate);
 
 	let filterComponent: JSX.Element = <></>;
 
@@ -35,8 +37,12 @@ export default function FilterControl(props: FilterControlProps) {
 
 	const resetState = () => {
 		setFilterType(FilterType.ByKind);
-		setToDate(new Date());
-		setFromDate(new Date(Date.now() - ONE_HOUR));
+		const toDate = new Date();
+		const fromDate = new Date(Date.now() - ONE_HOUR);
+		setToDate(toDate);
+		setFromDate(fromDate);
+		setAcceptedFromDate(fromDate);
+		setAcceptedToDate(toDate);
 		setFilterOption({kind: KindFilterType.GroupMessages});
 	};
 
@@ -68,7 +74,7 @@ export default function FilterControl(props: FilterControlProps) {
 			.then(xs => {
 				props.setMessages(xs);
 			}).catch(console.error);
-	}, [fromDate, toDate, filterOption]);
+	}, [acceptedFromDate, acceptedToDate, filterOption]);
 
 	return (<>
 		<Paper sx={{padding: 1}}>
@@ -101,6 +107,9 @@ export default function FilterControl(props: FilterControlProps) {
 									setFromDate(event);
 								}
 							}}
+							onAccept={() => {
+								setAcceptedFromDate(fromDate);
+							}}
 							value={fromDate}
 							renderInput={(value) => {
 								return (
@@ -128,6 +137,9 @@ export default function FilterControl(props: FilterControlProps) {
 								} else {
 									setToDate(event);
 								}
+							}}
+							onAccept={() => {
+								setAcceptedToDate(toDate);
 							}}
 							value={toDate}
 							renderInput={(value) => {

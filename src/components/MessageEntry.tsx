@@ -25,7 +25,7 @@ export default function MessageEntry(message: MessageRecord) {
 								{chain.map((item, index) => {
 									switch (item.type) {
 										case "PlainText":
-											return (item as PlainText).content
+											return <Typography key={index}>{(item as PlainText).content}</Typography>;
 										case "Image":
 											const id = (item as Image).imageId
 											const match = id.substring(1, 37).replaceAll("-", "")
@@ -37,7 +37,7 @@ export default function MessageEntry(message: MessageRecord) {
 											const target = (item as At).target
 											return <Link key={index} href="#" underline="always">{`@${target}`}</Link>
 										default:
-											return `[${item.type}]`
+											return <span key={index} className={'text-monospace'}>[{item.type}]</span>
 									}
 								})}
 							</Grid>
