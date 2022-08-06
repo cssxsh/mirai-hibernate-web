@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
 	FilterType,
-	KindFilterType, MessageFilterOptions,
+	KindFilterType,
+	MessageFilterOptions,
 	MessageRecord,
 	PartialMessageFilterOptions,
 	SearchOptions,
 	toFilterType,
 } from '../types';
-import { Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, TextField } from '@mui/material';
+import {
+	Box,
+	Button,
+	CircularProgress,
+	FormControl,
+	Grid,
+	InputLabel,
+	MenuItem,
+	Paper,
+	Select,
+	TextField,
+} from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import KindFilter from './parts/KindFilter';
@@ -28,6 +40,7 @@ export default function FilterControl(props: FilterControlProps) {
 	const [filterOption, setFilterOption] = useState<PartialMessageFilterOptions>({kind: KindFilterType.GroupMessages});
 	const [acceptedFromDate, setAcceptedFromDate] = useState(fromDate);
 	const [acceptedToDate, setAcceptedToDate] = useState(toDate);
+	const [busy, setBusy] = useState(false);
 
 	let filterComponent: JSX.Element = <></>;
 
@@ -54,10 +67,10 @@ export default function FilterControl(props: FilterControlProps) {
 
 	switch (filterType) {
 		case FilterType.ByKind:
-			filterComponent = <KindFilter onValueChange={filterValueChangeHandler} />;
+			filterComponent = <KindFilter onValueChange={filterValueChangeHandler}/>;
 			break;
 		case FilterType.ByBot:
-			filterComponent = <BotFilter onValueChange={filterValueChangeHandler} />;
+			filterComponent = <BotFilter onValueChange={filterValueChangeHandler}/>;
 			break;
 		case FilterType.ByGroup:
 			// TODO
@@ -71,10 +84,16 @@ export default function FilterControl(props: FilterControlProps) {
 	}
 
 	useEffect(() => {
-		const options = {...filterOption, from: toUnixTimestamp(fromDate), to: toUnixTimestamp(toDate)} as MessageFilterOptions;
+		setBusy(true);
+		const options = {
+			...filterOption,
+			from: toUnixTimestamp(fromDate),
+			to: toUnixTimestamp(toDate),
+		} as MessageFilterOptions;
 		fetchMessages(options)
 			.then(xs => {
 				props.setMessages(xs);
+				setBusy(false);
 			}).catch(console.error);
 	}, [acceptedFromDate, acceptedToDate, filterOption]);
 
@@ -84,8 +103,12 @@ export default function FilterControl(props: FilterControlProps) {
 				<Grid item xs={2}>
 					<FormControl fullWidth>
 						<InputLabel id={'lbl-filter-type'}>过滤条件</InputLabel>
-						<Select labelId={'lbl-filter-type'} id={'filter-type'} value={filterType} label={'过滤条件'} onChange={(event) => { setFilterType(toFilterType(event.target.value)) }}>
-							{SearchOptions.map((it, index) => <MenuItem key={index} value={it.value}>{it.label}</MenuItem>)}
+						<Select labelId={'lbl-filter-type'} id={'filter-type'} value={filterType} label={'过滤条件'}
+								onChange={(event) => {
+									setFilterType(toFilterType(event.target.value));
+								}}>
+							{SearchOptions.map((it, index) => <MenuItem key={index}
+																		value={it.value}>{it.label}</MenuItem>)}
 						</Select>
 					</FormControl>
 				</Grid>
@@ -116,9 +139,9 @@ export default function FilterControl(props: FilterControlProps) {
 							renderInput={(value) => {
 								return (
 									<FormControl fullWidth>
-										<TextField {...value} label={'开始时间'} />
+										<TextField {...value} label={'开始时间'}/>
 									</FormControl>
-								)
+								);
 							}}/>
 					</Grid>
 					<Grid item xs={4}>
@@ -147,17 +170,32 @@ export default function FilterControl(props: FilterControlProps) {
 							renderInput={(value) => {
 								return (
 									<FormControl fullWidth>
-										<TextField {...value} label={'结束时间'} />
+										<TextField {...value} label={'结束时间'}/>
 									</FormControl>
-								)
+								);
 							}}/>
 					</Grid>
 				</LocalizationProvider>
 				<Grid item xs={1}>
-					<Button onClick={refresh}>刷新</Button>
+					<Box sx={{position: 'relative'}}>
+						<Button disabled={busy} onClick={refresh}>刷新</Button>
+						{
+							busy && (
+								<CircularProgress
+									size={24}
+									sx={{
+										position: 'absolute',
+										top: '50%',
+										left: '50%',
+										marginTop: '-12px',
+										marginLeft: '-12px',
+									}}/>
+							)
+						}
+					</Box>
 				</Grid>
 				<Grid item xs={1}>
-					<Button onClick={resetState}>重置</Button>
+					<Button disabled={busy} onClick={resetState}>重置</Button>
 				</Grid>
 				{filterComponent}
 			</Grid>
