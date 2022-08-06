@@ -47,7 +47,9 @@ export default function FilterControl(props: FilterControlProps) {
 	};
 
 	const refresh = () => {
-		setToDate(new Date());
+		const toDate = new Date();
+		setToDate(toDate);
+		setAcceptedToDate(toDate);
 	};
 
 	switch (filterType) {
