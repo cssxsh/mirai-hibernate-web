@@ -7,19 +7,32 @@ import { replaceCenter } from '../util/StringUtil';
 export default function MessageEntry(message: MessageRecord) {
 	const chain = JSON.parse(message.code) as [PlainText | Image | At]
 	return (
-		<Card sx={{marginBottom: '0.5em'}}>
+		<Card sx={{marginBottom: '0.5em'}} id={message.id.toString()}>
 			<CardContent>
 				<Grid container spacing={2}>
 					<Grid item xs={1}>
 						<Avatar sx={{width: "100%", height: "auto"}}
 								src={`https://q.qlogo.cn/g?b=qq&nk=${message.fromId}&s=640`} />
 					</Grid>
-					<Grid item xs={10}>
+					<Grid item xs={11}>
 						<Grid container direction={'column'}>
 							<Grid item>
-								<Typography>
-									{replaceCenter(message.fromId.toString(), '*', 18)}
-								</Typography>
+								<Grid container direction={'row'}>
+									<Grid item>
+										<Typography>
+											{replaceCenter(message.fromId.toString(), '*', 18)}
+										</Typography>
+									</Grid>
+									<Grid item flexGrow={1}></Grid>
+									<Grid item>
+										<Typography>
+											{new Date(message.time * 1000).toLocaleString()}
+										</Typography>
+									</Grid>
+								</Grid>
+							</Grid>
+							<Grid item>
+								{message.recall ? (<span className={'text-recalled'}>该消息已被撤回</span>) : null}
 							</Grid>
 							<Grid item sx={{marginLeft: '0.5em'}}>
 								{chain.map((item, index) => {

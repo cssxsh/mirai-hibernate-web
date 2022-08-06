@@ -12,3 +12,7 @@
 .text-monospace {
 	font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
+
+.text-recalled {
+	color: gray;
+}
