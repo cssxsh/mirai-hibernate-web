@@ -26,6 +26,7 @@ import KindFilter from './parts/KindFilter';
 import { fetchMessages } from '../logic/Routes';
 import { toUnixTimestamp } from '../util/DateTimeUtil';
 import BotFilter from './parts/BotFilter';
+import GroupMessageFilter from './parts/GroupMessageFilter';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -73,7 +74,7 @@ export default function FilterControl(props: FilterControlProps) {
 			filterComponent = <BotFilter onValueChange={filterValueChangeHandler}/>;
 			break;
 		case FilterType.ByGroup:
-			// TODO
+			filterComponent = <GroupMessageFilter onValueChange={filterValueChangeHandler}/>;
 			break;
 		case FilterType.ByFriend:
 			// TODO
