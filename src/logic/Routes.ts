@@ -1,4 +1,4 @@
-import { MessageRecord } from "../types";
+import { isKindFilterOptions, KindFilterOptions, MessageFilterOptions, MessageRecord } from '../types';
 
 export const bot = async function (bot: number, start: number, end: number) {
 	const response = await fetch(`/message/bot?bot=${bot}&start=${start}&end=${end}`);
@@ -28,9 +28,18 @@ export const member = async function (bot: number, group: number, member: number
 	return data as MessageRecord[]
 }
 
-export const kind = async function (kind: string, start: number, end: number) {
-	const response = await fetch(`/message/kind?kind=${kind}&start=${start}&end=${end}`);
+async function fetchMessagesByKind(filter: KindFilterOptions): Promise<Array<MessageRecord>> {
+	const response = await fetch(`/message/kind?kind=${filter.kind}&start=${filter.from}&end=${filter.to}`);
 	const data = await response.json()
 
 	return data as MessageRecord[]
+}
+
+export async function fetchMessages(filter: MessageFilterOptions): Promise<Array<MessageRecord>> {
+	// TODO
+	if (isKindFilterOptions(filter)) {
+		return fetchMessagesByKind(filter);
+	}
+
+	return [];
 }
