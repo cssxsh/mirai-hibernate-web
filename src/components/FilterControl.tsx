@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	FilterType,
-	KindFilterType,
+	MessageKindType,
 	MessageFilterOptions,
 	MessageRecord,
 	PartialMessageFilterOptions,
@@ -38,7 +38,7 @@ export default function FilterControl(props: FilterControlProps) {
 	const [filterType, setFilterType] = useState(FilterType.ByKind);
 	const [fromDate, setFromDate] = useState(new Date(Date.now() - ONE_HOUR));
 	const [toDate, setToDate] = useState(new Date());
-	const [filterOption, setFilterOption] = useState<PartialMessageFilterOptions>({kind: KindFilterType.GroupMessages});
+	const [filterOption, setFilterOption] = useState<PartialMessageFilterOptions>({kind: MessageKindType.GroupMessages});
 	const [acceptedFromDate, setAcceptedFromDate] = useState(fromDate);
 	const [acceptedToDate, setAcceptedToDate] = useState(toDate);
 	const [busy, setBusy] = useState(false);
@@ -58,7 +58,7 @@ export default function FilterControl(props: FilterControlProps) {
 		setFromDate(fromDate);
 		setAcceptedFromDate(fromDate);
 		setAcceptedToDate(toDate);
-		setFilterOption({kind: KindFilterType.GroupMessages});
+		setFilterOption({kind: MessageKindType.GroupMessages});
 	};
 
 	const refresh = () => {

@@ -1,11 +1,12 @@
-import { At, Image, MessageRecord, PlainText } from '../types';
-import { Avatar, Card, CardContent, Grid, Link, Typography } from '@mui/material';
+import { MessageRecord } from '../types';
+import { Avatar, Card, CardContent, Grid} from '@mui/material';
 import * as React from 'react';
 import './Component.css';
-import { replaceCenter } from '../util/StringUtil';
+import MessageChain from './parts/MessageChain';
+import UserId from './parts/chat/UserId';
+import LocaleTime from './parts/chat/LocaleTime';
 
 export default function MessageEntry(message: MessageRecord) {
-	const chain = JSON.parse(message.code) as [PlainText | Image | At]
 	return (
 		<Card sx={{marginBottom: '0.5em'}} id={message.id.toString()}>
 			<CardContent>
@@ -19,15 +20,11 @@ export default function MessageEntry(message: MessageRecord) {
 							<Grid item>
 								<Grid container direction={'row'}>
 									<Grid item>
-										<Typography>
-											{replaceCenter(message.fromId.toString(), '*', 18)}
-										</Typography>
+										<UserId id={message.fromId.toString()} />
 									</Grid>
 									<Grid item flexGrow={1}></Grid>
 									<Grid item>
-										<Typography>
-											{new Date(message.time * 1000).toLocaleString()}
-										</Typography>
+										<LocaleTime timestamp={message.time} />
 									</Grid>
 								</Grid>
 							</Grid>
@@ -35,24 +32,7 @@ export default function MessageEntry(message: MessageRecord) {
 								{message.recall ? (<span className={'text-recalled'}>该消息已被撤回</span>) : null}
 							</Grid>
 							<Grid item sx={{marginLeft: '0.5em'}}>
-								{chain.map((item, index) => {
-									switch (item.type) {
-										case "PlainText":
-											return <Typography key={index}>{(item as PlainText).content}</Typography>;
-										case "Image":
-											const id = (item as Image).imageId
-											const match = id.substring(1, 37).replaceAll("-", "")
-											return <img key={index}
-														src={`https://gchat.qpic.cn/gchatpic_new/${message.fromId}/${message.targetId}-0-${match}/0?term=3`}
-														alt={id}
-														className={'image-preview'} />
-										case "At":
-											const target = (item as At).target
-											return <Link key={index} href="#" underline="always">{`@${target}`}</Link>
-										default:
-											return <span key={index} className={'text-monospace'}>[{item.type}]</span>
-									}
-								})}
+								<MessageChain message={message} />
 							</Grid>
 						</Grid>
 					</Grid>

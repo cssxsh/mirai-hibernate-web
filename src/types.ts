@@ -29,7 +29,7 @@ export const SearchOptions: SearchOption[] = [
 	{value: FilterType.ByMember, label: '按群成员'},
 ];
 
-export enum KindFilterType {
+export enum MessageKindType {
 	GroupMessages = 'GROUP',
 	FriendMessages = 'FRIEND',
 	GroupDirectMessage = 'TEMP',
@@ -58,7 +58,7 @@ function isBotBoundOptions(o: any): o is BotBoundOptions {
 }
 
 export interface KindFilterOptions extends TimeBoundOptions {
-	kind: KindFilterType;
+	kind: MessageKindType;
 }
 
 export function isKindFilterOptions(o: MessageFilterOptions): o is KindFilterOptions {
@@ -127,17 +127,78 @@ export type MessageRecord = {
 	recall: boolean
 }
 
-export type PlainText = {
-	type: string,
-	content: string
+export function isMessageRecord(o: MessageRecord | QuotedContent): o is MessageRecord {
+	return o.ids == null || typeof o.ids === 'string';
 }
 
-export type Image = {
-	type: string,
-	imageId: string
+export enum MessageChainItemType {
+	PlainText= 'PlainText',
+	Image = 'Image',
+	FlashImage = 'FlashImage',
+	At = 'At',
+	Face = 'Face',
+	QuoteReply = 'QuoteReply',
 }
 
-export type At = {
-	type: string,
-	target: number
+export interface MessageChainItem {
+	type: MessageChainItemType | string;
+}
+
+function isMessageChainItem(o: object): o is MessageChainItem {
+	return 'type' in o;
+}
+
+function isMessageChainItemOfSpecificType<T extends MessageChainItem>(o: object, t: MessageChainItemType): o is T {
+	return isMessageChainItem(o) && o['type'] === t;
+}
+
+export interface PlainText extends MessageChainItem {
+	content: string;
+}
+
+export function isPlainText(o: object): o is PlainText {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.PlainText) && 'content' in o;
+}
+
+export interface Image extends MessageChainItem {
+	imageId: string;
+}
+
+export interface FlashImage extends Image {
+	// no member
+}
+
+export function isImage(o: object): o is Image {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.Image) && 'imageId' in o;
+}
+
+export function isFlashImage(o: object): o is FlashImage {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.FlashImage) && 'imageId' in o;
+}
+
+export interface At extends MessageChainItem {
+	target: number;
+}
+
+export function isAt(o: object): o is At {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.At) && isNumericalMemberInObject(o, 'target');
+}
+
+export interface QuotedContent {
+	kind: MessageKindType;
+	botId: number;
+	ids: number[];
+	internalIds: number[];
+	time: number;
+	fromId: number;
+	targetId: number;
+	originalMessage: MessageChainItem[];
+}
+
+export interface QuoteMessage extends MessageChainItem {
+	source: QuotedContent;
+}
+
+export function isQuoteMessage(o: object): o is QuoteMessage {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.QuoteReply) && 'source' in o;
 }
