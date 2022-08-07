@@ -202,3 +202,11 @@ export interface QuoteMessage extends MessageChainItem {
 export function isQuoteMessage(o: object): o is QuoteMessage {
 	return isMessageChainItemOfSpecificType(o, MessageChainItemType.QuoteReply) && 'source' in o;
 }
+
+export interface Face {
+	id: number;
+}
+
+export function isFace(o: object): o is Face {
+	return isMessageChainItemOfSpecificType(o, MessageChainItemType.Face) && isNumericalMemberInObject(o, 'id');
+}

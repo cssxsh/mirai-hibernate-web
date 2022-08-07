@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-	isAt, isFlashImage,
+	isAt, isFace, isFlashImage,
 	isImage,
 	isMessageRecord,
 	isPlainText,
@@ -14,6 +14,7 @@ import Image from './chat/Image';
 import At from './chat/At';
 import QuotedMessageChain from './QuotedMessageChain';
 import UnknownComponent from './chat/UnknownComponent';
+import Face from './chat/Face';
 
 export interface MessageChainProps {
 	message: MessageRecord | QuotedContent;
@@ -34,8 +35,11 @@ export default function MessageChain(props: MessageChainProps) {
 			}
 
 			if (isAt(item)) {
-
 				return <At key={index} targetId={item.target} />;
+			}
+
+			if (isFace(item)) {
+				return <Face id={item.id} />
 			}
 
 			if (isImage(item)) {
