@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PartialMessageFilterOptions } from '../../types';
+import { PartialMessageFilterOptions } from '../../../types';
 import { Grid, TextField } from '@mui/material';
 
 export interface BotFilterProps {
@@ -8,21 +8,22 @@ export interface BotFilterProps {
 
 export default function BotFilter(props: BotFilterProps) {
 	const [value, setValue] = useState('');
-
-	const updateValue = () => {
-		console.log(value);
-		if (value.length > 0) {
-			try {
-				const id = Number(value);
-				props.onValueChange({bot: id});
-			} catch (_) { }
-		}
-	};
+	const onValueChange = props.onValueChange;
 
 	useEffect(() => {
+		const updateValue = () => {
+			console.log(value);
+			if (value.length > 0) {
+				try {
+					const id = Number(value);
+					onValueChange({bot: id});
+				} catch (_) { }
+			}
+		};
+
 		const t = setTimeout(updateValue, 350);
 		return () => clearTimeout(t);
-	}, [value]);
+	}, [value, onValueChange]);
 
 	return (<>
 		<Grid item xs={3}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
 	FilterType,
 	KindFilterType,
@@ -22,11 +22,11 @@ import {
 } from '@mui/material';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import KindFilter from './parts/KindFilter';
+import KindFilter from './parts/filter/KindFilter';
 import { fetchMessages } from '../logic/Routes';
 import { toUnixTimestamp } from '../util/DateTimeUtil';
-import BotFilter from './parts/BotFilter';
-import GroupMessageFilter from './parts/GroupMessageFilter';
+import BotFilter from './parts/filter/BotFilter';
+import GroupMessageFilter from './parts/filter/GroupMessageFilter';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -42,12 +42,13 @@ export default function FilterControl(props: FilterControlProps) {
 	const [acceptedFromDate, setAcceptedFromDate] = useState(fromDate);
 	const [acceptedToDate, setAcceptedToDate] = useState(toDate);
 	const [busy, setBusy] = useState(false);
+	const setMessages = props.setMessages;
 
 	let filterComponent: JSX.Element = <></>;
 
-	const filterValueChangeHandler = (x: PartialMessageFilterOptions) => {
+	const filterValueChangeHandler = useCallback((x: PartialMessageFilterOptions) => {
 		setFilterOption(x);
-	};
+	}, []);
 
 	const resetState = () => {
 		setFilterType(FilterType.ByKind);
@@ -88,15 +89,15 @@ export default function FilterControl(props: FilterControlProps) {
 		setBusy(true);
 		const options = {
 			...filterOption,
-			from: toUnixTimestamp(fromDate),
-			to: toUnixTimestamp(toDate),
+			from: toUnixTimestamp(acceptedFromDate),
+			to: toUnixTimestamp(acceptedToDate),
 		} as MessageFilterOptions;
 		fetchMessages(options)
 			.then(xs => {
-				props.setMessages(xs);
+				setMessages(xs);
 				setBusy(false);
 			}).catch(console.error);
-	}, [acceptedFromDate, acceptedToDate, filterOption]);
+	}, [acceptedFromDate, acceptedToDate, filterOption, setMessages]);
 
 	return (<>
 		<Paper sx={{padding: 1}}>

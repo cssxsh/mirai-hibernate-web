@@ -9,7 +9,7 @@ export enum FilterType {
 export function toFilterType(s: string): FilterType {
 	const coercedFilterType = FilterType as any;
 	for (let k in coercedFilterType) {
-		if (coercedFilterType[k] == s) {
+		if (coercedFilterType[k] === s) {
 			return coercedFilterType[k] as FilterType;
 		}
 	}

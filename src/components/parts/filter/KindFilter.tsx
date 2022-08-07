@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
-import { KindFilterType, PartialMessageFilterOptions } from '../../types';
+import { KindFilterType, PartialMessageFilterOptions } from '../../../types';
 
 interface KindOption {
 	label: string;
@@ -17,7 +17,7 @@ const KindOptions: KindOption[] = [
 function toKindOptionType(s: string): KindFilterType {
 	const coercedOptionType = KindFilterType as any;
 	for (let k in coercedOptionType) {
-		if (coercedOptionType[k] == s) {
+		if (coercedOptionType[k] === s) {
 			return coercedOptionType[k] as KindFilterType;
 		}
 	}

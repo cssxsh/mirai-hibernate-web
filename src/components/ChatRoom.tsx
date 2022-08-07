@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
-import { useState } from "react";
+import { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
 import { MessageRecord } from '../types';
 import MessageEntry from './MessageEntry';
@@ -16,6 +16,9 @@ const theme = createTheme();
 
 export default function ChatRoom() {
     const [messages, setMessages] = useState<MessageRecord[]>([]);
+    const setMessagesCallback = useCallback((xs: MessageRecord[]) => {
+        setMessages(xs);
+    }, []);
 
     return (
         <ThemeProvider theme={theme}>
@@ -32,7 +35,7 @@ export default function ChatRoom() {
             <Container sx={{py: 2}}>
                 <Grid container direction={'column'}>
                     <Grid item sx={{py: 1}}>
-                        <FilterControl setMessages={xs => setMessages(xs)} />
+                        <FilterControl setMessages={setMessagesCallback} />
                     </Grid>
                     {messages.map((message, index) => <MessageEntry {...message} key={index} />)}
                     <Grid item>
