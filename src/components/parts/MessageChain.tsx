@@ -39,7 +39,7 @@ export default function MessageChain(props: MessageChainProps) {
 			}
 
 			if (isFace(item)) {
-				return <Face id={item.id} />
+				return <Face key={index} id={item.id} />
 			}
 
 			if (isImage(item)) {

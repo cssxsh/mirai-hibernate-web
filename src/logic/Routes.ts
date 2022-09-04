@@ -9,11 +9,28 @@ import {
 	MessageRecord, TemporaryMessageFilterOptions,
 } from '../types';
 
-async function fetchMessage(url: string): Promise<Array<MessageRecord>> {
-	const response = await fetch(url);
-	const data = await response.json();
+interface RemoteResponse {
+	code: number;
+	msg: string;
+	data?: object;
+}
 
-	return data as MessageRecord[];
+async function fetchDataFromRemote(url: string, expectNonZeroStatusCode = false): Promise<RemoteResponse> {
+	const response = await fetch(url);
+	const responseBody = await response.json();
+	const coercedResult = responseBody as RemoteResponse;
+
+	if (coercedResult.code !== 0 && !expectNonZeroStatusCode) {
+		throw coercedResult;
+	} else {
+		return coercedResult;
+	}
+}
+
+async function fetchMessage(url: string): Promise<Array<MessageRecord>> {
+	const response = await fetchDataFromRemote(url);
+
+	return response.data as MessageRecord[];
 }
 
 async function fetchMessagesByKind(filter: KindFilterOptions): Promise<Array<MessageRecord>> {
@@ -37,6 +54,8 @@ async function fetchMessagesByTemporarySession(filter: TemporaryMessageFilterOpt
 }
 
 export async function fetchMessages(filter: MessageFilterOptions): Promise<Array<MessageRecord>> {
+	console.log(filter);
+
 	if (isKindFilterOptions(filter)) {
 		return fetchMessagesByKind(filter);
 	}
@@ -57,5 +76,12 @@ export async function fetchMessages(filter: MessageFilterOptions): Promise<Array
 		return fetchMessagesByTemporarySession(filter);
 	}
 
+	console.error("Invalid message fetch filter predicate!");
 	return [];
+}
+
+export async function fetchKnownBots(): Promise<Array<number>> {
+	const data = await fetchDataFromRemote('/archive/bot');
+
+	return data.data as Array<number>;
 }
