@@ -1,6 +1,5 @@
 import React from 'react';
-import './App.css';
-import {Routes, Route, Link} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import Album from "./components/Album";
 import ChatRoom from "./components/ChatRoom";
 
